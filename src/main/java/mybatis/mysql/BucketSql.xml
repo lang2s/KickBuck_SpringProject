@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bucket">
+	<insert id="bucketInsert" parameterType="bdto">
+		insert into bucket (num, user_name, type, subject, content, image, likecount, withcount, hashtag, area, dday, writeday, open, with_user, like_user)
+		values (0, #{user_name}, 'solo', #{subject}, #{content}, #{image}, 0, 0, #{hashtag}, #{area}, #{dday}, now(), #{open}, #{user_name}, #{user_name})
+	</insert>
+	
+	<update id="bucketWithUp" parameterType="Map">
+		update bucket set withcount = withcount + 1, with_user = concat(with_user,',',#{user_name})
+  		where num = #{num} and with_user not like concat('%',#{user_name},'%')
+	</update>
+	
+	<update id="bucketLikeUp" parameterType="Map">
+		update bucket set likecount = likecount + 1, like_user = concat(like_user,',',#{user_name})
+  		where num = #{num} and like_user not like concat('%',#{user_name},'%')
+	</update>
+	
+	<select id="BucketWithCheck" parameterType="int" resultType="bdto">
+		select with_user,writeday from bucket where num = #{num} 
+	</select>
+	
+	<select id="AllSelect" resultType="bdto">
+		select * from bucket where open = 'on'
+	</select>
+
+	<select id="SoloSelect" resultType="bdto">
+		select * from bucket where type = 'solo' and open = 'on'
+	</select>
+	
+	<select id="WithSelect" resultType="bdto">
+		select * from bucket where type = 'with' and open = 'on'
+	</select>
+	
+	<select id="OneSelect" resultType="bdto" parameterType="int">
+		select * from bucket where num = #{num}
+	</select>
+	
+	<select id="SearchSelect" parameterType="String" resultType="bdto">
+		select * from bucket where content like concat('%',#{keyword},'%')
+	</select>
+	
+	<!-- 마이페이지 나의 버킷 관련  -->
+	<select id="mypageMyBucketList" resultType="bdto" parameterType="String">
+		select * from bucket where user_name = #{user_name} and type = 'solo' order by num desc 
+	</select>
+	
+	<update id="MyBucketDelte" parameterType="int">
+		delete from bucket where num = #{num}
+	</update> 
+	
+	<select id="MyOffBucketList" resultType="bdto" parameterType="String">
+		select * from bucket where user_name = #{user_name} and type = 'off' order by num desc
+	</select>
+	
+	<select id="mypageOurBucketList" resultType="bdto" parameterType="String">
+		select * from bucket where type = 'with' and with_user like concat('%',#{user_name},'%') order by num desc
+	</select>
+	
+	<select id="WaitMyBucket" parameterType="String" resultType="bdto">
+		select * from bucket where user_name = #{user_name} and  withcount >= 10 and type = 'with' and withopen = 0
+	</select>
+	
+	<update id="WithOpenUpdate" parameterType="int">
+		update bucket set withopen = 1 where num = #{num}
+	</update>
+	
+	<update id="OffUpdate" parameterType="int">
+		update bucket set type = 'off' where num = #{num}
+	</update>
+	
+	<select id="OffSelect" resultType="bdto">
+		select * from bucket where type = 'off' and open = 'on'
+	</select>
+	
+	<select id="OffOneSelect" parameterType="int" resultType="bdto">
+		select * from bucket where type = 'off' and num = #{num}
+	</select>
+	
+	<select id="MyLikeUpBucket" parameterType="String" resultType="bdto">
+		select * from bucket where with_user like concat('%',#{user_name},'%') order by num desc
+	</select>
+	
+	<update id="WaitComplete" parameterType="String">
+		update bucket set type = 'with' where num = #{num}
+	</update>
+	
+	<select id="withuserselect" parameterType="int" resultType="String">
+		select with_user from bucket where num = #{num}
+	</select>
+	
+	<select id="WithCountCheck" parameterType="int" resultType="int">
+		select count(*) from bucket where num = #{num} and withcount >= 10 and withopen = 1
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
